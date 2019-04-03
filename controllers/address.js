@@ -1,20 +1,23 @@
 const {Address,validateAddress} = require('../models/Address');
+/* const asyncMiddleware = require('../middleware/async');
+  note that:  optional to express-async-errors */
 
-const createAddress = async (req,res,next) => {
+// Post Section
+const createAddress = async (req,res) => {
   const {error} = validateAddress(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const address = new Address({
+  let address = new Address({
     name: req.body.name,
     district: req.body.district,
     subDistrict: req.body.subDistrict,
     postOffice: req.body.postOffice,
     village: req.body.village
   })
-  const result = await address.save()
-  if(!result) res.status(505).send('Error Occured');
-  res.send(result);
-}
+  address = await address.save();
+  if(!address) return res.status(400).send('Somthing wrong');
+  res.send(address);
+};
 
 const getAddress = async (req,res,next) => {
   const addresses = await Address.find();
@@ -22,6 +25,8 @@ const getAddress = async (req,res,next) => {
   res.send(addresses);
 }
 
+
+// Get Section
 const getSingleAddress = async (req,res,next) => {
   const address = await Address.findById(req.params.id);
   if(!address) res.status(505).send('Error Occured in getSingleAddress');
@@ -29,7 +34,7 @@ const getSingleAddress = async (req,res,next) => {
     message: 'Single Address',
     address
   })
-}
+};
 
 const updateAddress = async (req,res,next) => {
   const {error} = validateAddress(req.body);

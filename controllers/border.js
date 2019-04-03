@@ -1,38 +1,23 @@
 const {Border, validateBorder} = require('../models/Border');
+// const asyncMiddleware = require('../middleware/async');
 
 
+// Get section
+const getAllBorder = async (req,res) => {
+  let border = await Border.find().populate('address','name -_id district');
+  if(!border) return res.status(400).send('Something wrong');
+  res.send(border);
+};
 
 
-const getAllBorder = (req,res,next) => {
-  Border.find().populate('address','name -_id district').select('borderName address borderEmail borderPassword')
-  .then((border) => {
-    res.status(200).json({
-      message: 'All Border Data',
-      border
-    }).catch(err => {
-      res.status(500).json({
-        message: 'Error Found',
-        Error: err.message
-      })
-    })
-  })
+// Get single data
+const getBorderById = async (req,res) => {
+  let border = await Border.findOne({_id:id})
+  if(!border) return res.status(400).send('Have no data');
+  res.send(border);
 }
 
-const getBorderById = (req,res,next) => {
-  const id = req.params.id;
-  Border.findOne({_id:id}).then((border) => {
-    res.status(200).json({
-      message: 'Single Border Data',
-      border
-    })
-  }).catch(err => {
-    res.status(500).json({
-      message:'Error Occured',
-      Error: err.message
-    })
-  })
-}
-
+// Post section 
 const getPostBorder = (req,res,next) => {
   const { error } = validateBorder(req.body);
   if (error) return res.status(400).send(error.details[0].message);

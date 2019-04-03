@@ -1,3 +1,4 @@
+require('express-async-errors');
 const config = require('config');
 const express = require('express');
 const app = express();
@@ -10,7 +11,7 @@ const addressRouter = require('./routes/address');
 const studentsRouter = require('./routes/students');
 const userRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
-
+const error = require('./middleware/error');
 if(!config.get('jwtPrivateKey')){
   console.log('Fatal error: jwtPrivateKey is not defined');
   process.exit(1);
@@ -37,3 +38,6 @@ app.use('/api/address',addressRouter);
 app.use('/api/students',studentsRouter);
 app.use('/api/users',userRouter);
 app.use('/api/login',authRouter);
+
+
+app.use(error);
